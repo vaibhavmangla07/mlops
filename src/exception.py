@@ -1,10 +1,9 @@
+"""Lightweight custom exceptions for the batch signal pipeline."""
+
+
 class ConfigurationError(Exception):
-    """Raised when configuration loading or validation fails."""
+    """Raised when configuration is invalid."""
 
 
 class DataValidationError(Exception):
-    """Raised when input data fails validation checks."""
-
-
-class ProcessingError(Exception):
-    """Raised when signal processing encounters an error."""
+    """Raised when dataset validation fails."""

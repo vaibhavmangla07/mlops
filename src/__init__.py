@@ -1,1 +1,1 @@
-# Batch Signal Pipeline — src package.
+"""Batch Signal Pipeline — src package."""

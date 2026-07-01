@@ -17,7 +17,7 @@ Built with engineering quality in mind — clean architecture, proper validation
 
 ---
 
-## Folder Structure
+## Project Structure
 
 ```
 Batch-Signal-Pipeline/
@@ -32,15 +32,22 @@ Batch-Signal-Pipeline/
 │
 └── src/
     ├── __init__.py     # Package init
-    ├── constants.py    # Shared constants (keys, formats, status values)
-    ├── exception.py    # Custom exceptions (Config, Data, Processing)
-    ├── logger.py       # Dual-output logging setup (file + console)
+    ├── exception.py    # Custom exceptions (ConfigurationError, DataValidationError)
+    ├── logger.py       # Dual-output logging setup (file + stderr)
     ├── config.py       # YAML loading, validation, seed initialization
-    ├── validator.py    # Input file and CSV validation
-    ├── processor.py    # Rolling mean + signal generation
-    ├── metrics.py      # Metrics construction and persistence
-    └── utils.py        # Reusable helpers (JSON writing, timing)
+    ├── processor.py    # Data loading, rolling mean, signal generation
+    └── metrics.py      # Metrics construction and persistence
 ```
+
+---
+
+## Requirements
+
+| Package | Purpose |
+|---------|---------|
+| `pandas` | Data loading and manipulation |
+| `numpy` | Random seed for deterministic execution |
+| `PyYAML` | YAML configuration parsing |
 
 ---
 
@@ -54,14 +61,6 @@ cd mlops
 # Install dependencies
 pip install -r requirements.txt
 ```
-
-### Dependencies
-
-| Package | Purpose |
-|---------|---------|
-| `pandas` | Data loading and manipulation |
-| `numpy` | Random seed for deterministic execution |
-| `pyyaml` | YAML configuration parsing |
 
 ---
 
@@ -151,33 +150,32 @@ All three keys must be present. The pipeline validates their existence before pr
 The pipeline uses Python's `logging` module with dual output — file and console (stderr). Log entries are timestamped and follow this sequence:
 
 ```
-2026-07-01 10:28:14,708 [INFO] Job started
-2026-07-01 10:28:14,709 [INFO] Config loaded — seed=42, window=5, version=v1
-2026-07-01 10:28:14,728 [INFO] Data loaded — 10000 rows
-2026-07-01 10:28:14,731 [INFO] Rolling mean computed
-2026-07-01 10:28:14,736 [INFO] Signal generated
-2026-07-01 10:28:14,736 [INFO] Metrics — signal_rate=0.4991, rows_processed=10000, latency_ms=29
-2026-07-01 10:28:14,736 [INFO] Metrics written to metrics.json
-2026-07-01 10:28:14,736 [INFO] Job completed — status=success
+2026-07-01 12:33:50,439 [INFO] Job started
+2026-07-01 12:33:50,439 [INFO] Config loaded and validated — seed=42, window=5, version=v1
+2026-07-01 12:33:50,457 [INFO] Data loaded — 10000 rows
+2026-07-01 12:33:50,457 [INFO] Rolling mean computed
+2026-07-01 12:33:50,457 [INFO] Signal generated
+2026-07-01 12:33:50,460 [INFO] Metrics — signal_rate=0.4991, rows_processed=10000, latency_ms=29
+2026-07-01 12:33:50,460 [INFO] Metrics written to metrics.json
+2026-07-01 12:33:50,460 [INFO] Job completed — status=success
 ```
 
-Console output goes to stderr so that Docker's stdout remains clean for metrics JSON output.
+Console output goes to stderr so Docker's stdout remains clean for metrics JSON output.
 
 ---
 
 ## Error Handling
 
-The pipeline handles failures gracefully using three custom exceptions:
+The pipeline handles failures gracefully using two custom exceptions:
 
 | Exception | Trigger |
 |-----------|---------|
 | `ConfigurationError` | Missing config file, invalid YAML, missing keys |
 | `DataValidationError` | Missing input file, invalid CSV, empty file, missing columns |
-| `ProcessingError` | Rolling mean or signal generation failure |
 
 On any failure:
 1. The error is logged with full context
-2. An error `metrics.json` is written (metrics file is **always** generated)
+2. An error `metrics.json` is always written
 3. The process exits with a non-zero exit code
 
 ---
@@ -186,9 +184,8 @@ On any failure:
 
 - **Modular `src/` package** — Each module has a single responsibility. `run.py` is a thin orchestrator that reads top-to-bottom.
 - **Custom exceptions over generic ones** — Makes error categorization clear in logs and metrics without a complex hierarchy.
-- **NaN handling** — The first `window - 1` rows produce NaN rolling means and are excluded from signal computation and metrics. This is intentional and documented.
+- **NaN handling** — The first `window - 1` rows produce NaN rolling means and are excluded from signal computation and metrics. This is intentional and documented in `processor.py`.
 - **Stderr for console logs** — Keeps stdout clean for Docker metrics output via `cat metrics.json`.
-- **Constants module** — Eliminates magic strings. Required keys, status values, and formats are defined once.
 - **No over-engineering** — No design patterns, no frameworks, no abstraction layers beyond what readability requires.
 
 ---

@@ -1,36 +1,45 @@
-# Configuration loading, validation, and seed initialization.
+"""Configuration loading, validation, and seed initialization."""
 
-from pathlib import Path
-from typing import Any, Dict
-
-import numpy as np
 import yaml
+import numpy as np
 
-from src.constants import REQUIRED_CONFIG_KEYS
 from src.exception import ConfigurationError
 
 
-def load_config(config_path: str) -> Dict[str, Any]:
-    path = Path(config_path)
+def load_config(config_path):
+    """Load and validate the YAML configuration file.
 
-    if not path.exists():
+    Reads the YAML file, validates that all required keys are present,
+    and sets the NumPy random seed for deterministic execution.
+
+    Args:
+        config_path: Path to the YAML config file.
+
+    Returns:
+        Validated configuration dictionary.
+
+    Raises:
+        ConfigurationError: If the file is missing, unreadable, or incomplete.
+    """
+    try:
+        with open(config_path, "r") as file:
+            config = yaml.safe_load(file)
+
+    except FileNotFoundError:
         raise ConfigurationError(f"Config file not found: {config_path}")
 
-    try:
-        with open(path, "r") as f:
-            config = yaml.safe_load(f)
-    except yaml.YAMLError as e:
-        raise ConfigurationError(f"Invalid YAML in config file: {e}") from e
+    except yaml.YAMLError:
+        raise ConfigurationError("Invalid YAML file.")
 
     if not isinstance(config, dict):
-        raise ConfigurationError("Config file is empty or not a valid YAML mapping")
+        raise ConfigurationError("Configuration must be a dictionary.")
 
-    # Validate required keys
-    for key in REQUIRED_CONFIG_KEYS:
+    required_keys = ["seed", "window", "version"]
+
+    for key in required_keys:
         if key not in config:
-            raise ConfigurationError(f"Missing required config key: '{key}'")
+            raise ConfigurationError(f"Missing required key: {key}")
 
-    # Set random seed for deterministic execution
     np.random.seed(config["seed"])
 
     return config
