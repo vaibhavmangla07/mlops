@@ -1,9 +1,8 @@
-2026-07-01 10:17:15,482 [INFO] Job started
-2026-07-01 10:17:15,483 [INFO] Config loaded and validated — seed=42, window=5, version=v1
-2026-07-01 10:17:15,497 [INFO] Data loaded — 10000 rows
-2026-07-01 10:17:15,499 [INFO] Rolling mean computed
-2026-07-01 10:17:15,502 [INFO] Signal generated
-2026-07-01 10:17:15,502 [INFO] Metrics — signal_rate=0.4991, rows_processed=10000, latency_ms=20
-2026-07-01 10:17:15,502 [INFO] Job completed successfully
-2026-07-01 10:17:15,502 [INFO] Metrics written to metrics.json
-2026-07-01 10:17:15,502 [INFO] Job ended
+2026-07-01 12:23:53,290 [INFO] Job started
+2026-07-01 12:23:53,292 [INFO] Config loaded — seed=42, window=5, version=v1
+2026-07-01 12:23:53,305 [INFO] Data loaded — 10000 rows
+2026-07-01 12:23:53,308 [INFO] Rolling mean computed
+2026-07-01 12:23:53,310 [INFO] Signal generated
+2026-07-01 12:23:53,311 [INFO] Metrics — signal_rate=0.4991, rows_processed=10000, latency_ms=20
+2026-07-01 12:23:53,311 [INFO] Metrics written to metrics.json
+2026-07-01 12:23:53,311 [INFO] Job completed — status=success
