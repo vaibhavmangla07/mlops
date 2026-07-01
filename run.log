@@ -6,3 +6,4 @@
 2026-07-01 12:50:19,448 [INFO] Metrics — signal_rate=0.4991, rows_processed=10000, latency_ms=20
 2026-07-01 12:50:19,448 [INFO] Metrics written to metrics.json
 2026-07-01 12:50:19,448 [INFO] Job completed — status=success
+
