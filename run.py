@@ -1,11 +1,3 @@
-"""Batch Signal Pipeline — main entry point.
-
-Orchestrates the full batch job: load config → validate data → process → write metrics.
-
-Usage:
-    python run.py --input data.csv --config config.yaml --output metrics.json --log-file run.log
-"""
-
 import argparse
 import json
 import sys
@@ -19,7 +11,6 @@ from src.processor import load_data, generate_signal
 
 
 def parse_arguments():
-    """Parse command-line arguments."""
     parser = argparse.ArgumentParser(description="Batch Signal Pipeline")
     parser.add_argument("--input", required=True, help="Path to input CSV file")
     parser.add_argument("--config", required=True, help="Path to configuration YAML file")
@@ -29,7 +20,6 @@ def parse_arguments():
 
 
 def main():
-    """Run the batch signal pipeline end-to-end."""
     start_time = time.time()
     args = parse_arguments()
 

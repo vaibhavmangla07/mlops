@@ -1,6 +1,3 @@
-"""Lightweight custom exceptions for the batch signal pipeline."""
-
-
 class ConfigurationError(Exception):
     """Raised when configuration is invalid."""
 

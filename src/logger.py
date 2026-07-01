@@ -1,21 +1,7 @@
-"""Logging configuration for the batch signal pipeline."""
-
 import logging
 import sys
 
-
 def setup_logger(log_file):
-    """Configure and return a logger with dual output (file + console).
-
-    Console output goes to stderr so stdout stays clean for metrics JSON
-    output in Docker.
-
-    Args:
-        log_file: Path to the log file.
-
-    Returns:
-        Configured logger instance.
-    """
     logger = logging.getLogger("batch_signal_pipeline")
     logger.setLevel(logging.INFO)
 
